@@ -8,7 +8,7 @@ Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous 
 * Vavkamil -- https://github.com/vavkamil/PNG-IDAT-chunks
 
 ##Concept
-1.Generate PNG payload
+1. Generate PNG payload
  1. Bruteforce hex string that Gzdeflates into target payload
  2. Engineer discovered Gzdeflate string to bypass PNG filters
  3. Generate PNG file with payload embeded in IDAT chunk
