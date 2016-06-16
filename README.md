@@ -16,7 +16,8 @@ Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous 
 3. Take control of web application response content-type (example: .png.html)
 
 ##To Do
-* aLogue Bruteforce method (attempt > 3 char payloads)
+* Threading
+* Logging (maybe)
 * Vavkamil Bruteforce method(s)
 * Pure Bruteforce method (long)
 * iDontPlayDarts PHP Shell method
