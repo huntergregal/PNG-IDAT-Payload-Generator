@@ -33,7 +33,7 @@ if __name__ == '__main__':
 		print "Domains larger than 3 chars not supported yet!"
 	#Check possible bruteforce methods
 	else:
-		method = calcBruteMethod(remoteDomain, prefix, tld)
+		gzdeflatePayload = calcBruteMethod(remoteDomain, prefix, tld)
 	#If failed, quit
 	if not gzdeflatePayload:
 		print "[+] Payload Failed to Generate...exiting"
