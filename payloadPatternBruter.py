@@ -45,7 +45,7 @@ def bruteForce():
 				f.write("%s || %s\n" % (m.group(0), guess))
                 start += 1
                 i+=1
-        return
+        return found
 if __name__ == '__main__':
 	raw_input("Press any key to start pattern bruteforce")
 	found = bruteForce()
