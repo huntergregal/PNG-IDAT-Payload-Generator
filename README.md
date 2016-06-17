@@ -7,6 +7,22 @@ Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous 
 * fin1te -- https://whitton.io/articles/xss-on-facebook-via-png-content-types
 * Vavkamil -- https://github.com/vavkamil/PNG-IDAT-chunks
 
+##Usage
+```
+usage: generate.py [-h] -m {xss,php} [-r REMOTEDOMAIN] -o OUTPUTIMAGE
+
+Tool to generate PNG-IDAT Payloads.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m {xss,php}, --method {xss,php}
+                        Choose payload method, -h to view available methods
+  -r REMOTEDOMAIN, --remote-domain REMOTEDOMAIN
+                        Remote domain to retrieve payload from (shorter the
+                        better: ex. xx.xxx)
+  -o OUTPUTIMAGE, --output-file OUTPUTIMAGE
+                        Output payload to PNG file
+```
 ##Concept
 1. Generate PNG payload
  1. Bruteforce hex string that Gzdeflates into target payload
@@ -18,6 +34,5 @@ Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous 
 ##To Do
 * Threading
 * Logging (maybe)
-* Vavkamil Bruteforce method(s)
+* Vavkamil Bruteforce method(s) , tld vs prefix
 * Pure Bruteforce method (long)
-* iDontPlayDarts PHP Shell method
