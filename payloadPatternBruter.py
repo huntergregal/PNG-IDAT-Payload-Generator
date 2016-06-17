@@ -41,7 +41,7 @@ def bruteForce():
 			m = re.search(pattern,deflate)
                         print "[!]GZDEFLATE PAYLOAD FOUND[!]"
                         print "Gzdeflate Payload String: %s" % m.group(0)
-			with open(payloadsFile, 'w+') as f:
+			with open(payloadsFile, 'a') as f:
 				f.write("%s || %s" % (m.group(0), guess))
                 start += 1
                 i+=1
