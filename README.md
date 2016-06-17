@@ -1,5 +1,6 @@
 # PNG-IDAT-Payload-Generator
 Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous concepts and code -- credit given below)
+Additionally, bruteforce payloads matching a regex pattern
 
 ##Based Off of Previous Concepts and Research
 * Adam Logue -- https://www.adamlogue.com/revisiting-xss-payloads-in-png-idat-chunks
@@ -23,6 +24,8 @@ optional arguments:
   -o OUTPUTIMAGE, --output-file OUTPUTIMAGE
                         Output payload to PNG file
 ```
+* To bruteforce pattern matches, modify "payloadPatternBruter.py" to meet your needs and run it. 
+
 ##Concept
 1. Generate PNG payload
  1. Bruteforce hex string that Gzdeflates into target payload
