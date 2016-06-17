@@ -16,8 +16,8 @@ import re, sys
 def bruteForce():
 	##Config
 	#<script src=//[any 1-3 letters\.bz></script> (case ignored)
-	pattern = r"\<[s|S][c|C][r|R][i|I][p|P][t|T]\s[s|S][r|R][c|C]\=\/\/[0-9a-zA-Z]{1,3}\.[b|B][z|Z]\>\<\/[s|S][c|C][r|R][i|I][p|P][t|T]\>"
-	template = "f399281922111510691928276e6e%s1e581b1f576e69b16375535b6f0e7f"
+	pattern = r"\<[s|S][c|C][r|R][i|I][p|P][t|T]\s[s|S][r|R][c|C]\=\/\/[0-9a-zA-Z]{1,3}\.[p|P][e|E]\>\<\/[s|S][c|C][r|R][i|I][p|P][t|T]\>"
+	template = "007ff399281922111510691928276e6e%s1e51241f576e69b16375535b6f"
 	start = 0x111111
 	end = 0xffffff
 	payloadsFile = "crackedPayloads.txt"

