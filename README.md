@@ -1,3 +1,5 @@
+-NOTE-Final payload images appear to be broken...standby why this is debugged
+
 # PNG-IDAT-Payload-Generator
 Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous concepts and code -- credit given below)
 Additionally, bruteforce payloads matching a regex pattern
