@@ -1,0 +1,5 @@
+Django==1.10.5
+image==1.5.5
+olefile==0.44
+Pillow==4.0.0
+pkg-resources==0.0.0

