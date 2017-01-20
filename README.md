@@ -1,4 +1,8 @@
--NOTE-Final payload images appear to be broken...standby why this is debugged
+# /!\ THIS PROJECT IS NOT WORKING AS-IS, PATCHES WELCOME
+
+
+
+
 
 # PNG-IDAT-Payload-Generator
 Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous concepts and code -- credit given below)
