@@ -1,20 +1,17 @@
-# /!\ THIS PROJECT IS NOT WORKING AS-IS, PATCHES WELCOME
-
-
-
-
-
 # PNG-IDAT-Payload-Generator
 Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous concepts and code -- credit given below)
 Additionally, bruteforce payloads matching a regex pattern
 
-##Based Off of Previous Concepts and Research
+This is a Python3, PEP8-compatible, fully-working version of huntergregal's initial project.
+
+## Based Off of Previous Concepts and Research
+* Hunter Gregal -- https://github.com/huntergregal/PNG-IDAT-Payload-Generator
 * Adam Logue -- https://www.adamlogue.com/revisiting-xss-payloads-in-png-idat-chunks
 * IDontPlayDarts -- https://www.idontplaydarts.com/2012/06/encoding-web-shells-in-png-idat-chunks
 * fin1te -- https://whitton.io/articles/xss-on-facebook-via-png-content-types
 * Vavkamil -- https://github.com/vavkamil/PNG-IDAT-chunks
 
-##Usage
+## Usage
 ```
 usage: generate.py [-h] -m {xss,php} [-r REMOTEDOMAIN] -o OUTPUTIMAGE
 
@@ -32,7 +29,7 @@ optional arguments:
 ```
 * To bruteforce pattern matches, modify "payloadPatternBruter.py" to meet your needs and run it. 
 
-##Concept
+## Concept
 1. Generate PNG payload
  1. Bruteforce hex string that Gzdeflates into target payload
  2. Engineer discovered Gzdeflate string to bypass PNG filters
@@ -40,8 +37,7 @@ optional arguments:
 2. Upload PNG payload to vulnerable target web application
 3. Take control of web application response content-type (example: .png.html)
 
-##To Do
-* Threading
-* Logging (maybe)
+## To Do
 * Vavkamil Bruteforce method(s) , tld vs prefix
 * Pure Bruteforce method (long)
+* Port `payloadPatternBruter.py` to Python3
