@@ -2,7 +2,7 @@
 Generate a PNG with a payload embedded in the IDAT chunk (Based off of previous concepts and code -- credit given below)
 Additionally, bruteforce payloads matching a regex pattern
 
-This is a Python3, PEP8-compatible, fully-working version of huntergregal's initial project.
+This is a Python3, PEP8-compatible, fully-working version of huntergregal's initial project. Rewritten and fixed by https://github.com/TheZ3ro @TheZ3Pro
 
 ## Based Off of Previous Concepts and Research
 * Hunter Gregal -- https://github.com/huntergregal/PNG-IDAT-Payload-Generator
