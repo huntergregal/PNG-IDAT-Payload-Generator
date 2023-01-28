@@ -40,6 +40,14 @@ options:
 * use a target of `xqi.cc` to create a payload for a generic XSS reflector. thanks idontplaydarts for the tip
   * usage for this payload is `xqi.cc/?zz=alert(1)`
 
+## Generic XSS Payload
+* usage `target.com/evil.png?zz=alert(1)`
+
+<img src="https://user-images.githubusercontent.com/6970250/215236480-a05b524a-27b1-4fc7-8ce7-191cd3795747.png" width="250" height="250">
+
+s/o idontplaywithdarts for the domain tip
+
+
 ## Concept
 1. Generate PNG payload
  1. Bruteforce hex string that Gzdeflates into target payload
